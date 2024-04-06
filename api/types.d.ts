@@ -14,7 +14,3 @@ export interface CommentWithoutId {
   author: string | null;
   body: string;
 }
-
-export interface Comment extends CommentWithoutId {
-  id: number;
-}
