@@ -14,3 +14,5 @@ export interface NewsShort {
 export interface News extends NewsShort {
   body: string;
 }
+
+export type NewsWithoutId = Omit<News, 'id'>

@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axiosApi from '../../axiosApi';
-import { NewsShort } from '../../types';
+import { News, NewsShort } from '../../types';
 
 export const fetchNews = createAsyncThunk('news/fetch', async () => {
   try {
@@ -21,5 +21,17 @@ export const deleteNews = createAsyncThunk(
     } catch (error) {
       console.log(error);
     }
+  }
+);
+
+export const fetchNewsById = createAsyncThunk(
+  'news/fetchById',
+  async (id: string) => {
+    const { data: news } = await axiosApi.get<News>(`/news/${id}`);
+
+    if (!news.id) {
+      throw new Error('Not found');
+    }
+    return news;
   }
 );
