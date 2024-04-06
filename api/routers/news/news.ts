@@ -37,7 +37,7 @@ newsRouter.post('/', imagesUpload.single('image'), async (req, res, next) => {
   try {
     if (!req.body.title || !req.body.body) {
       return res
-        .status(404)
+        .status(400)
         .send({ error: 'News title and body must be present!' });
     }
 

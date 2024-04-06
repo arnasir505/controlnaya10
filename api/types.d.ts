@@ -8,3 +8,13 @@ export interface NewsWithoutId {
 export interface News extends NewsWithoutId {
   id: number;
 }
+
+export interface CommentWithoutId {
+  newsId: number;
+  author: string | null;
+  body: string;
+}
+
+export interface Comment extends CommentWithoutId {
+  id: number;
+}
