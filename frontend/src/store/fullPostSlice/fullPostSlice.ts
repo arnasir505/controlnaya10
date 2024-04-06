@@ -1,13 +1,14 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { Comment, CommentWithNewsId, News, NewsWithoutId } from '../../types';
+import { ApiComment, Comment, News, NewsWithoutId } from '../../types';
 import { RootState } from '../../app/store';
 import { fetchNewsById } from '../newsSlice/newsThunks';
-import { addComment } from './fullPostThunks';
+import { addComment, fetchComments } from './fullPostThunks';
 
 interface FullPostState {
   data: NewsWithoutId;
   comments: Comment[];
   loading: boolean;
+  commentsLoading: boolean;
   error: boolean;
 }
 
@@ -20,6 +21,7 @@ const initialState: FullPostState = {
   },
   comments: [],
   loading: false,
+  commentsLoading: false,
   error: false,
 };
 
@@ -52,12 +54,12 @@ const fullPostSlice = createSlice({
     builder
       .addCase(addComment.pending, (state) => {
         state.error = false;
-        state.loading = true;
+        state.commentsLoading = true;
       })
       .addCase(
         addComment.fulfilled,
-        (state, { payload: comment }: PayloadAction<CommentWithNewsId>) => {
-          state.loading = false;
+        (state, { payload: comment }: PayloadAction<ApiComment>) => {
+          state.commentsLoading = false;
           const newComment: Comment = {
             id: comment.id,
             author: comment.author,
@@ -67,7 +69,23 @@ const fullPostSlice = createSlice({
         }
       )
       .addCase(addComment.rejected, (state) => {
-        state.loading = false;
+        state.commentsLoading = false;
+        state.error = true;
+      });
+    builder
+      .addCase(fetchComments.pending, (state) => {
+        state.error = false;
+        state.commentsLoading = true;
+      })
+      .addCase(
+        fetchComments.fulfilled,
+        (state, { payload: comments }: PayloadAction<ApiComment[]>) => {
+          state.commentsLoading = false;
+          state.comments = comments;
+        }
+      )
+      .addCase(fetchComments.rejected, (state) => {
+        state.commentsLoading = false;
         state.error = true;
       });
   },
@@ -75,5 +93,9 @@ const fullPostSlice = createSlice({
 
 export const fullPostReducer = fullPostSlice.reducer;
 export const selectFullPost = (state: RootState) => state.fullPost.data;
+export const selectFullPostComments = (state: RootState) =>
+  state.fullPost.comments;
 export const selectFullPostLoading = (state: RootState) =>
   state.fullPost.loading;
+export const selectFullPostCommentsLoading = (state: RootState) =>
+  state.fullPost.commentsLoading;

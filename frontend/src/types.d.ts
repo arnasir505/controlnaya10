@@ -26,6 +26,13 @@ export interface Comment extends CommentWithoutId {
   id: number;
 }
 
-export interface CommentWithNewsId extends Comment {
+export interface CommentWithNewsId extends CommentWithoutId {
   newsId: number;
+}
+
+export interface ApiComment {
+  id: number;
+  newsId: number;
+  author: string;
+  body: string;
 }

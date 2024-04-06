@@ -3,17 +3,24 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { fetchNewsById } from '../../store/newsSlice/newsThunks';
-import { selectFullPost } from '../../store/fullPostSlice/fullPostSlice';
+import {
+  selectFullPost,
+  selectFullPostComments,
+} from '../../store/fullPostSlice/fullPostSlice';
 import dayjs from 'dayjs';
 import { apiUrl } from '../../constants';
 import { LoadingButton } from '@mui/lab';
 import { CommentWithoutId } from '../../types';
+import {
+  addComment,
+  fetchComments,
+} from '../../store/fullPostSlice/fullPostThunks';
 
 const FullPost: React.FC = () => {
   const params = useParams();
   const dispatch = useAppDispatch();
   const { title, body, image, date } = useAppSelector(selectFullPost);
-
+  const comments = useAppSelector(selectFullPostComments);
   const [commentForm, setCommentForm] = useState<CommentWithoutId>({
     author: '',
     body: '',
@@ -26,15 +33,18 @@ const FullPost: React.FC = () => {
     setCommentForm((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const onCommentSubmit = (e: React.FormEvent) => {
+  const onCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(commentForm);
-    setCommentForm({ author: '', body: '' });
+    if (params.id) {
+      await dispatch(addComment({ newsId: Number(params.id), ...commentForm }));
+      setCommentForm({ author: '', body: '' });
+    }
   };
 
   const getNews = async () => {
     if (params.id) {
       await dispatch(fetchNewsById(params.id));
+      await dispatch(fetchComments(params.id));
     }
   };
 
@@ -61,6 +71,11 @@ const FullPost: React.FC = () => {
       <Typography variant='h4' sx={{ mt: 2 }}>
         Comments
       </Typography>
+      {comments.map((comment) => (
+        <div>
+          {comment.author} {comment.body}
+        </div>
+      ))}
       <Typography variant='h4' sx={{ mt: 2, mb: 1 }}>
         Add comment
       </Typography>
