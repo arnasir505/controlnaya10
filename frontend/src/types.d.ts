@@ -15,4 +15,17 @@ export interface News extends NewsShort {
   body: string;
 }
 
-export type NewsWithoutId = Omit<News, 'id'>
+export type NewsWithoutId = Omit<News, 'id'>;
+
+export interface CommentWithoutId {
+  author: string;
+  body: string;
+}
+
+export interface Comment extends CommentWithoutId {
+  id: number;
+}
+
+export interface CommentWithNewsId extends Comment {
+  newsId: number;
+}

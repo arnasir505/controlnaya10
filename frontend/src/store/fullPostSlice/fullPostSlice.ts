@@ -1,10 +1,12 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { News, NewsWithoutId } from '../../types';
+import { Comment, CommentWithNewsId, News, NewsWithoutId } from '../../types';
 import { RootState } from '../../app/store';
 import { fetchNewsById } from '../newsSlice/newsThunks';
+import { addComment } from './fullPostThunks';
 
 interface FullPostState {
   data: NewsWithoutId;
+  comments: Comment[];
   loading: boolean;
   error: boolean;
 }
@@ -16,6 +18,7 @@ const initialState: FullPostState = {
     image: null,
     date: '',
   },
+  comments: [],
   loading: false,
   error: false,
 };
@@ -43,6 +46,27 @@ const fullPostSlice = createSlice({
         }
       )
       .addCase(fetchNewsById.rejected, (state) => {
+        state.loading = false;
+        state.error = true;
+      });
+    builder
+      .addCase(addComment.pending, (state) => {
+        state.error = false;
+        state.loading = true;
+      })
+      .addCase(
+        addComment.fulfilled,
+        (state, { payload: comment }: PayloadAction<CommentWithNewsId>) => {
+          state.loading = false;
+          const newComment: Comment = {
+            id: comment.id,
+            author: comment.author,
+            body: comment.body,
+          };
+          state.comments.push(newComment);
+        }
+      )
+      .addCase(addComment.rejected, (state) => {
         state.loading = false;
         state.error = true;
       });
