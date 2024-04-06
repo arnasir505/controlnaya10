@@ -1,7 +1,9 @@
 import {
+  Box,
   Button,
   Card,
   CardContent,
+  CircularProgress,
   Container,
   Grid,
   TextField,
@@ -14,6 +16,7 @@ import { fetchNewsById } from '../../store/newsSlice/newsThunks';
 import {
   selectFullPost,
   selectFullPostComments,
+  selectFullPostCommentsLoading,
 } from '../../store/fullPostSlice/fullPostSlice';
 import dayjs from 'dayjs';
 import { apiUrl } from '../../constants';
@@ -30,6 +33,7 @@ const FullPost: React.FC = () => {
   const dispatch = useAppDispatch();
   const { title, body, image, date } = useAppSelector(selectFullPost);
   const comments = useAppSelector(selectFullPostComments);
+  const commentsLoading = useAppSelector(selectFullPostCommentsLoading);
   const [commentForm, setCommentForm] = useState<CommentWithoutId>({
     author: '',
     body: '',
@@ -71,6 +75,43 @@ const FullPost: React.FC = () => {
     void getNews();
   }, [params.id]);
 
+  let contentComments = (
+    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <CircularProgress size={'3rem'} sx={{ mt: 2 }} />
+    </Box>
+  );
+
+  if (comments.length > 0 && !commentsLoading) {
+    contentComments = (
+      <>
+        {comments.map((comment) => (
+          <Card key={comment.id} sx={{ mb: 2, border: '1px solid #000' }}>
+            <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant='body1' sx={{ fontWeight: 'bold', mr: 1 }}>
+                {comment.author ? comment.author : 'Anonymous'}:
+              </Typography>
+              <Typography variant='body1'>{comment.body}</Typography>
+              <Button
+                color='error'
+                variant='contained'
+                sx={{ ml: 'auto' }}
+                onClick={() => onCommentDelete(comment.id)}
+              >
+                Delete
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </>
+    );
+  } else if (comments.length === 0 && !commentsLoading) {
+    contentComments = (
+      <Typography>
+        No comments yet.
+      </Typography>
+    );
+  }
+
   return (
     <Container sx={{ py: 3 }}>
       <Typography variant='h3'>{title}</Typography>
@@ -90,24 +131,7 @@ const FullPost: React.FC = () => {
       <Typography variant='h4' sx={{ mt: 2 }}>
         Comments
       </Typography>
-      {comments.map((comment) => (
-        <Card key={comment.id} sx={{ mb: 2, border: '1px solid #000' }}>
-          <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant='body1' sx={{ fontWeight: 'bold', mr: 1 }}>
-              {comment.author ? comment.author : 'Anonymous'}:
-            </Typography>
-            <Typography variant='body1'>{comment.body}</Typography>
-            <Button
-              color='error'
-              variant='contained'
-              sx={{ ml: 'auto' }}
-              onClick={() => onCommentDelete(comment.id)}
-            >
-              Delete
-            </Button>
-          </CardContent>
-        </Card>
-      ))}
+      {contentComments}
       <Typography variant='h4' sx={{ mt: 2, mb: 1 }}>
         Add comment
       </Typography>
