@@ -4,10 +4,13 @@ export interface PostWithoutId {
   image: string | null;
 }
 
-export interface News {
+export interface NewsShort {
   id: number;
   title: string;
-  body: string;
   image: string | null;
   date: string;
+}
+
+export interface News extends NewsShort {
+  body: string;
 }
