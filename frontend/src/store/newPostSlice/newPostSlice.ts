@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { PostWithoutId } from '../../types';
 import { RootState } from '../../app/store';
+import { createNewPost } from './newPostThunks';
 
 interface NewPostState {
   data: PostWithoutId;
@@ -40,6 +41,20 @@ const newPostSlice = createSlice({
       state.data = { title: '', body: '', image: null };
       state.filename = '';
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(createNewPost.pending, (state) => {
+        state.error = false;
+        state.loading = true;
+      })
+      .addCase(createNewPost.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(createNewPost.rejected, (state) => {
+        state.loading = false;
+        state.error = true;
+      });
   },
 });
 
