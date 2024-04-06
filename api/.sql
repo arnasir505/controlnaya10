@@ -23,3 +23,10 @@ create table comments
         foreign key (news_id) references news (id)
 )
     auto_increment = 201;
+alter table comments
+    drop foreign key comments_news_id_fk;
+
+alter table comments
+    add constraint comments_news_id_fk
+        foreign key (news_id) references news (id)
+            on delete cascade;

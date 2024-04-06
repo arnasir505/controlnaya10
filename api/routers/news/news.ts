@@ -63,4 +63,33 @@ newsRouter.post('/', imagesUpload.single('image'), async (req, res, next) => {
   }
 });
 
+newsRouter.delete('/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    const [news_ids] = await mySqlDb
+      .getConnection()
+      .query('SELECT id FROM news');
+
+    const result = JSON.stringify(news_ids);
+    const parsed: Record<'id', number>[] = JSON.parse(result);
+
+    const foundIndexOfCategoryId = parsed.findIndex(
+      (category) => category.id === Number(id)
+    );
+
+    if (foundIndexOfCategoryId === -1) {
+      return res.status(404).send({ error: 'Not Found!' });
+    }
+
+    await mySqlDb
+      .getConnection()
+      .query(`DELETE FROM news WHERE id = ${id} LIMIT 1`);
+
+    return res.send(`DELETED news with id: ${id}`);
+  } catch (error) {
+    next(error)
+  }
+})
+
 export default newsRouter;
