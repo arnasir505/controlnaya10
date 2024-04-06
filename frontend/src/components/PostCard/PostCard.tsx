@@ -9,6 +9,8 @@ import React from 'react';
 import { apiUrl } from '../../constants';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { useAppDispatch } from '../../app/hooks';
+import { deleteNews, fetchNews } from '../../store/newsSlice/newsThunks';
 
 interface Props {
   id: number;
@@ -18,13 +20,22 @@ interface Props {
 }
 
 const PostCard: React.FC<Props> = ({ id, title, image, date }) => {
+  const dispatch = useAppDispatch();
+
+  const onDelete = async (id: number) => {
+    const confirmDelete = confirm('Delete this news?');
+    if (confirmDelete) {
+      await dispatch(deleteNews(id));
+      await dispatch(fetchNews());
+    }
+  };
+
   return (
     <Card
       sx={{
         my: 1,
         border: '1px solid grey',
         display: 'flex',
-        alignItems: 'center',
       }}
     >
       {image ? (
@@ -42,7 +53,12 @@ const PostCard: React.FC<Props> = ({ id, title, image, date }) => {
         </Typography>
         <Link to={`/news/${id}`}>Read full post</Link>
       </CardContent>
-      <Button variant='contained' color='error' sx={{ ml: 'auto', mr: 2 }}>
+      <Button
+        variant='contained'
+        color='error'
+        sx={{ ml: 'auto', mr: 2, alignSelf: 'center' }}
+        onClick={() => onDelete(id)}
+      >
         Delete
       </Button>
     </Card>

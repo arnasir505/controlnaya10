@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { NewsShort } from '../../types';
 import { RootState } from '../../app/store';
-import { fetchNews } from './newsThunks';
+import { deleteNews, fetchNews } from './newsThunks';
 
 interface NewsState {
   data: NewsShort[];
@@ -33,6 +33,18 @@ const newsSlice = createSlice({
         }
       )
       .addCase(fetchNews.rejected, (state) => {
+        state.loading = false;
+        state.error = true;
+      });
+    builder
+      .addCase(deleteNews.pending, (state) => {
+        state.error = false;
+        state.loading = true;
+      })
+      .addCase(deleteNews.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(deleteNews.rejected, (state) => {
         state.loading = false;
         state.error = true;
       });

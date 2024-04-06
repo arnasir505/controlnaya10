@@ -12,3 +12,14 @@ export const fetchNews = createAsyncThunk('news/fetch', async () => {
     return [];
   }
 });
+
+export const deleteNews = createAsyncThunk(
+  'news/delete',
+  async (id: number) => {
+    try {
+      await axiosApi.delete(`/news/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
