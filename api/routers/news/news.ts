@@ -1,7 +1,8 @@
 import express from 'express';
 import mySqlDb from '../../mySqlDb';
-import { RowDataPacket } from 'mysql2/promise';
-import { News } from '../../types';
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { News, NewsWithoutId } from '../../types';
+import { imagesUpload } from '../../multer';
 
 const newsRouter = express.Router();
 
@@ -30,6 +31,36 @@ newsRouter.get('/:id', async (req, res) => {
   }
 
   return res.send(category);
+});
+
+newsRouter.post('/', imagesUpload.single('image'), async (req, res, next) => {
+  try {
+    if (!req.body.title || !req.body.body) {
+      return res
+        .status(404)
+        .send({ error: 'News title and body must be present!' });
+    }
+
+    const date = new Date();
+
+    const newsData: NewsWithoutId = {
+      title: req.body.title,
+      body: req.body.body,
+      image: req.file ? req.file.filename : null,
+      date: date.toISOString(),
+    };
+
+    const [result] = (await mySqlDb
+      .getConnection()
+      .query(
+        'INSERT INTO news (title, body, image, date)' + 'VALUES (?, ?, ?, ?)',
+        [newsData.title, newsData.body, newsData.image, newsData.date]
+      )) as ResultSetHeader[];
+
+    return res.send({ id: result.insertId, ...newsData });
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default newsRouter;
