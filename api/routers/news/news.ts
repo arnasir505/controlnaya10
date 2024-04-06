@@ -24,13 +24,13 @@ newsRouter.get('/:id', async (req, res) => {
     .getConnection()
     .query(`SELECT * from news WHERE id = ${id}`)) as RowDataPacket[];
 
-  const category: News = result[0];
+  const news: News = result[0];
 
-  if (!category) {
+  if (!news) {
     return res.status(404).send({ error: 'Not Found!' });
   }
 
-  return res.send(category);
+  return res.send(news);
 });
 
 newsRouter.post('/', imagesUpload.single('image'), async (req, res, next) => {
@@ -74,11 +74,11 @@ newsRouter.delete('/:id', async (req, res, next) => {
     const result = JSON.stringify(news_ids);
     const parsed: Record<'id', number>[] = JSON.parse(result);
 
-    const foundIndexOfCategoryId = parsed.findIndex(
-      (category) => category.id === Number(id)
+    const foundIndexOfNewsId = parsed.findIndex(
+      (news) => news.id === Number(id)
     );
 
-    if (foundIndexOfCategoryId === -1) {
+    if (foundIndexOfNewsId === -1) {
       return res.status(404).send({ error: 'Not Found!' });
     }
 

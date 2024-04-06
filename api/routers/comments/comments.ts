@@ -28,19 +28,22 @@ commentsRouter.get('/', async (req, res, next) => {
 
 commentsRouter.post('/', async (req, res, next) => {
   try {
-
     if (!req.body.body || !req.body.newsId) {
       return res
         .status(400)
         .send({ error: 'Comment body and news id must be present!' });
     }
-    
-    const [news_ids] = await mySqlDb.getConnection().query('SELECT id FROM news');
+
+    const [news_ids] = await mySqlDb
+      .getConnection()
+      .query('SELECT id FROM news');
 
     const stringified = JSON.stringify(news_ids);
     const parsed: Record<'id', number>[] = JSON.parse(stringified);
 
-    const foundIndex = parsed.findIndex((news) => news.id === Number(req.body.newsId));
+    const foundIndex = parsed.findIndex(
+      (news) => news.id === Number(req.body.newsId)
+    );
 
     if (foundIndex === -1) {
       return res.status(404).send({ error: 'Not Found!' });
@@ -60,6 +63,35 @@ commentsRouter.post('/', async (req, res, next) => {
       )) as ResultSetHeader[];
 
     res.send({ id: result.insertId, ...commentData });
+  } catch (error) {
+    next(error);
+  }
+});
+
+commentsRouter.delete('/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    const [comments_ids] = await mySqlDb
+      .getConnection()
+      .query('SELECT id FROM comments');
+
+    const result = JSON.stringify(comments_ids);
+    const parsed: Record<'id', number>[] = JSON.parse(result);
+
+    const foundIndexOfCommentId = parsed.findIndex(
+      (comment) => comment.id === Number(id)
+    );
+
+    if (foundIndexOfCommentId === -1) {
+      return res.status(404).send({ error: 'Not Found!' });
+    }
+
+    await mySqlDb
+      .getConnection()
+      .query(`DELETE FROM comments WHERE id = ${id} LIMIT 1`);
+
+    return res.send(`DELETED comment with id: ${id}`);
   } catch (error) {
     next(error);
   }
