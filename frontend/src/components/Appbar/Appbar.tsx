@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, AppBar, Toolbar, Typography, Container } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const Appbar: React.FC = () => {
   return (
@@ -8,7 +9,9 @@ const Appbar: React.FC = () => {
         <Container>
           <Toolbar>
             <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-              News
+              <Link to='/' style={{ color: '#fff', textDecoration: 'none' }}>
+                News
+              </Link>
             </Typography>
           </Toolbar>
         </Container>

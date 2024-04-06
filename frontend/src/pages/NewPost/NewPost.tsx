@@ -12,8 +12,10 @@ import {
 } from '../../store/newPostSlice/newPostSlice';
 import { LoadingButton } from '@mui/lab';
 import { createNewPost } from '../../store/newPostSlice/newPostThunks';
+import { useNavigate } from 'react-router-dom';
 
 const NewPost: React.FC = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const newPost = useAppSelector(selectNewPost);
   const loading = useAppSelector(selectNewPostSubmitLoading);
@@ -31,7 +33,7 @@ const NewPost: React.FC = () => {
     e.preventDefault();
     await dispatch(createNewPost(newPost));
     dispatch(clearForm());
-    // dispatch(fetchMessages());
+    navigate('/');
   };
 
   return (

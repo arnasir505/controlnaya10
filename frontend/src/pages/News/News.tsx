@@ -55,7 +55,7 @@ const News: React.FC = () => {
   }
   return (
     <Container sx={{ py: 4 }}>
-      <Grid container>
+      <Grid container sx={{ mb: 2 }}>
         <Grid item sx={{ mr: 'auto' }}>
           <Typography variant='h4'>Posts</Typography>
         </Grid>

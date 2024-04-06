@@ -19,7 +19,14 @@ interface Props {
 
 const PostCard: React.FC<Props> = ({ id, title, image, date }) => {
   return (
-    <Card sx={{ my: 1, border: '1px solid grey', display: 'flex', alignItems: 'center' }}>
+    <Card
+      sx={{
+        my: 1,
+        border: '1px solid grey',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
       {image ? (
         <CardMedia
           component={'img'}
@@ -35,7 +42,7 @@ const PostCard: React.FC<Props> = ({ id, title, image, date }) => {
         </Typography>
         <Link to={`/news/${id}`}>Read full post</Link>
       </CardContent>
-      <Button variant='contained' color='error' sx={{ml: 'auto', mr: 2}}>
+      <Button variant='contained' color='error' sx={{ ml: 'auto', mr: 2 }}>
         Delete
       </Button>
     </Card>
