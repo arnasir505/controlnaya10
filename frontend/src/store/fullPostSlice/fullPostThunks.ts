@@ -32,3 +32,14 @@ export const fetchComments = createAsyncThunk<ApiComment[], string>(
     }
   }
 );
+
+export const deleteComment = createAsyncThunk<void, number>(
+  'fullPost/deleteComment',
+  async (id) => {
+    try {
+      await axiosApi.delete(`/comments/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);

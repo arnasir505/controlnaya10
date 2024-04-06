@@ -22,10 +22,6 @@ export interface CommentWithoutId {
   body: string;
 }
 
-export interface Comment extends CommentWithoutId {
-  id: number;
-}
-
 export interface CommentWithNewsId extends CommentWithoutId {
   newsId: number;
 }
@@ -33,6 +29,6 @@ export interface CommentWithNewsId extends CommentWithoutId {
 export interface ApiComment {
   id: number;
   newsId: number;
-  author: string;
+  author: string | null;
   body: string;
 }

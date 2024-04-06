@@ -1,4 +1,12 @@
-import { Container, Grid, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Grid,
+  TextField,
+  Typography,
+} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -13,6 +21,7 @@ import { LoadingButton } from '@mui/lab';
 import { CommentWithoutId } from '../../types';
 import {
   addComment,
+  deleteComment,
   fetchComments,
 } from '../../store/fullPostSlice/fullPostThunks';
 
@@ -38,6 +47,16 @@ const FullPost: React.FC = () => {
     if (params.id) {
       await dispatch(addComment({ newsId: Number(params.id), ...commentForm }));
       setCommentForm({ author: '', body: '' });
+    }
+  };
+
+  const onCommentDelete = async (id: number) => {
+    if (params.id) {
+      const confirmDelete = confirm('Delete this comment?');
+      if (confirmDelete) {
+        await dispatch(deleteComment(id));
+        await dispatch(fetchComments(params.id));
+      }
     }
   };
 
@@ -72,9 +91,22 @@ const FullPost: React.FC = () => {
         Comments
       </Typography>
       {comments.map((comment) => (
-        <div>
-          {comment.author} {comment.body}
-        </div>
+        <Card key={comment.id} sx={{ mb: 2, border: '1px solid #000' }}>
+          <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant='body1' sx={{ fontWeight: 'bold', mr: 1 }}>
+              {comment.author ? comment.author : 'Anonymous'}:
+            </Typography>
+            <Typography variant='body1'>{comment.body}</Typography>
+            <Button
+              color='error'
+              variant='contained'
+              sx={{ ml: 'auto' }}
+              onClick={() => onCommentDelete(comment.id)}
+            >
+              Delete
+            </Button>
+          </CardContent>
+        </Card>
       ))}
       <Typography variant='h4' sx={{ mt: 2, mb: 1 }}>
         Add comment

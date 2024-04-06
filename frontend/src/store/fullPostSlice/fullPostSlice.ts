@@ -1,12 +1,12 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { ApiComment, Comment, News, NewsWithoutId } from '../../types';
+import { ApiComment, News, NewsWithoutId } from '../../types';
 import { RootState } from '../../app/store';
 import { fetchNewsById } from '../newsSlice/newsThunks';
-import { addComment, fetchComments } from './fullPostThunks';
+import { addComment, deleteComment, fetchComments } from './fullPostThunks';
 
 interface FullPostState {
   data: NewsWithoutId;
-  comments: Comment[];
+  comments: ApiComment[];
   loading: boolean;
   commentsLoading: boolean;
   error: boolean;
@@ -60,8 +60,9 @@ const fullPostSlice = createSlice({
         addComment.fulfilled,
         (state, { payload: comment }: PayloadAction<ApiComment>) => {
           state.commentsLoading = false;
-          const newComment: Comment = {
+          const newComment: ApiComment = {
             id: comment.id,
+            newsId: comment.newsId,
             author: comment.author,
             body: comment.body,
           };
@@ -85,6 +86,18 @@ const fullPostSlice = createSlice({
         }
       )
       .addCase(fetchComments.rejected, (state) => {
+        state.commentsLoading = false;
+        state.error = true;
+      });
+    builder
+      .addCase(deleteComment.pending, (state) => {
+        state.error = false;
+        state.commentsLoading = true;
+      })
+      .addCase(deleteComment.fulfilled, (state) => {
+        state.commentsLoading = false;
+      })
+      .addCase(deleteComment.rejected, (state) => {
         state.commentsLoading = false;
         state.error = true;
       });
