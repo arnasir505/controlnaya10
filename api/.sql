@@ -1,0 +1,1 @@
+create schema schema_name collate utf8mb4_general_ci;
